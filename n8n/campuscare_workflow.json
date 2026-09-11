@@ -1,0 +1,253 @@
+{
+  "name": "CampusCare AI Automated Complaint Resolution Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "campuscare-complaint",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-1",
+      "name": "Webhook Receiver",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "campuscare-complaint"
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.body.priority }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "URGENT"
+            },
+            {
+              "value2": "HIGH"
+            },
+            {
+              "value2": "MEDIUM"
+            }
+          ]
+        },
+        "fallbackOutput": 3
+      },
+      "id": "node-priority-switch",
+      "name": "Priority Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "escalation_status",
+              "value": "CRITICAL_ESCALATION_TRIGGERED"
+            },
+            {
+              "name": "sms_alert",
+              "value": "SMS alert sent to Department Head."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-urgent-escalation",
+      "name": "Urgent Emergency Dispatch",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [720, 160]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "escalation_status",
+              "value": "STANDARD_ROUTING"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-standard-routing",
+      "name": "Standard Priority Dispatch",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [720, 360]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "department_notification_status",
+              "value": "DISPATCHED"
+            },
+            {
+              "name": "department_recipient",
+              "value": "={{ $json.body.department_notification.to }}"
+            },
+            {
+              "name": "department_subject",
+              "value": "={{ $json.body.department_notification.subject }}"
+            },
+            {
+              "name": "department_email_body",
+              "value": "={{ $json.body.department_notification.body }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-notify-dept",
+      "name": "Notify Department Email",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [960, 240]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "student_confirmation_status",
+              "value": "SENT"
+            },
+            {
+              "name": "student_recipient",
+              "value": "={{ $json.body.student_notification.to }}"
+            },
+            {
+              "name": "student_subject",
+              "value": "={{ $json.body.student_notification.subject }}"
+            },
+            {
+              "name": "student_email_body",
+              "value": "={{ $json.body.student_notification.body }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-ack-student",
+      "name": "Acknowledge Student Email",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [960, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"ticket_id\": \"{{ $json.body.ticket_id }}\",\n  \"assigned_department\": \"{{ $json.body.department }}\",\n  \"priority\": \"{{ $json.body.priority }}\",\n  \"acknowledged\": true,\n  \"message\": \"n8n automation successfully processed ticket and notified staff.\"\n}",
+        "options": {}
+      },
+      "id": "node-webhook-response",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1200, 320]
+    }
+  ],
+  "connections": {
+    "Webhook Receiver": {
+      "main": [
+        [
+          {
+            "node": "Priority Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority Router": {
+      "main": [
+        [
+          {
+            "node": "Urgent Emergency Dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Urgent Emergency Dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Standard Priority Dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Standard Priority Dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent Emergency Dispatch": {
+      "main": [
+        [
+          {
+            "node": "Notify Department Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standard Priority Dispatch": {
+      "main": [
+        [
+          {
+            "node": "Notify Department Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Department Email": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Student Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge Student Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

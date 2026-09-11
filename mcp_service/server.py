@@ -16,17 +16,14 @@ from mcp.server.mcpserver import MCPServer
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("CampusCare.MCP")
 
-# Paths for JSON storage
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 COMPLAINTS_FILE = os.path.join(BASE_DIR, "data", "complaints.json")
 DEPARTMENTS_FILE = os.path.join(BASE_DIR, "data", "departments.json")
 
-# Initialize MCP Server
 mcp_server = MCPServer("CampusCareTools")
 
 
 def _read_json_file(file_path: str, default: Any) -> Any:
-    """Safely reads a JSON file or returns default."""
     if not os.path.exists(file_path):
         return default
     try:
@@ -38,7 +35,6 @@ def _read_json_file(file_path: str, default: Any) -> Any:
 
 
 def _write_json_file(file_path: str, data: Any) -> bool:
-    """Safely writes data to a JSON file."""
     try:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, "w", encoding="utf-8") as f:
@@ -49,9 +45,7 @@ def _write_json_file(file_path: str, data: Any) -> bool:
         return False
 
 
-# -------------------------------------------------------------
 # MCP Tool 1: save_complaint
-# -------------------------------------------------------------
 @mcp_server.tool()
 def save_complaint(
     student_name: str,
@@ -66,13 +60,8 @@ def save_complaint(
     suggested_action: str,
     response: str
 ) -> str:
-    """
-    Saves a structured complaint record into the JSON file storage (data/complaints.json).
-    Returns a confirmation message with the generated complaint ticket ID.
-    """
     complaints = _read_json_file(COMPLAINTS_FILE, [])
 
-    # Generate sequential complaint ticket ID
     ticket_number = len(complaints) + 1
     ticket_id = f"CMP-{time.strftime('%Y%m%d')}-{ticket_number:04d}"
 
@@ -110,18 +99,11 @@ def save_complaint(
         })
 
 
-# -------------------------------------------------------------
 # MCP Tool 2: get_department_contact
-# -------------------------------------------------------------
 @mcp_server.tool()
 def get_department_contact(department_name: str) -> str:
-    """
-    Retrieves the official contact details, head of department, email, phone,
-    and SLA hours for a given college department from data/departments.json.
-    """
     departments = _read_json_file(DEPARTMENTS_FILE, {})
 
-    # Normalize lookup
     dept_info = departments.get(department_name)
     if not dept_info:
         for name, info in departments.items():
@@ -152,9 +134,7 @@ def get_department_contact(department_name: str) -> str:
         })
 
 
-# -------------------------------------------------------------
 # MCP Tool 3: prepare_notification
-# -------------------------------------------------------------
 @mcp_server.tool()
 def prepare_notification(
     ticket_id: str,
@@ -167,10 +147,6 @@ def prepare_notification(
     location: str,
     summary: str
 ) -> str:
-    """
-    Prepares a clean, professional email / webhook notification payload for
-    either the responsible department staff or the student acknowledgement.
-    """
     dept_contact_res = json.loads(get_department_contact(department_name=department))
     dept_email = dept_contact_res.get("contact", {}).get("email", "admin@campuscare.edu")
 
@@ -214,5 +190,4 @@ def prepare_notification(
 
 
 if __name__ == "__main__":
-    # Can run standalone as MCP stdio server
     mcp_server.run()

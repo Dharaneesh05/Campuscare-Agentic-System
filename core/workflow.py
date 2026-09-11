@@ -64,10 +64,6 @@ def _load_departments() -> Dict[str, Any]:
 # Agent 1: Analyzer Agent
 # -------------------------------------------------------------
 def analyzer_agent(state: ComplaintState) -> Dict[str, Any]:
-    """
-    Analyzes the raw student complaint text.
-    Extracts category, location, and a clean executive summary.
-    """
     complaint_text = state.get("complaint", "")
     logger.info(f"[Agent 1: Analyzer] Analyzing: '{complaint_text[:50]}...'")
 
@@ -100,10 +96,6 @@ def analyzer_agent(state: ComplaintState) -> Dict[str, Any]:
 # Agent 2: Priority Agent
 # -------------------------------------------------------------
 def priority_agent(state: ComplaintState) -> Dict[str, Any]:
-    """
-    Determines complaint priority: LOW, MEDIUM, HIGH, or URGENT.
-    Factors in exam proximity, physical safety, disruption, and timing.
-    """
     complaint_text = state.get("complaint", "")
     category = state.get("category", "")
     summary = state.get("summary", "")
@@ -128,15 +120,11 @@ def priority_agent(state: ComplaintState) -> Dict[str, Any]:
             priority = "MEDIUM"
         return {
             "priority": priority,
-            "urgency_reason": data.get("urgency_reason", f"Assigned based on complaint context.")
+            "urgency_reason": data.get("urgency_reason", "Assigned based on complaint context.")
         }
     except Exception:
-        # Fallback keyword evaluation
         text_lower = complaint_text.lower()
-        if any(w in text_lower for w in ["exam", "test", "urgent", "hazard", "spark", "flood"]):
-            p = "HIGH"
-        else:
-            p = "MEDIUM"
+        p = "HIGH" if any(w in text_lower for w in ["exam", "test", "urgent", "hazard", "spark", "flood"]) else "MEDIUM"
         return {
             "priority": p,
             "urgency_reason": "Evaluated based on critical academic/facility timeline."
@@ -147,15 +135,10 @@ def priority_agent(state: ComplaintState) -> Dict[str, Any]:
 # Agent 3: Department Routing Agent
 # -------------------------------------------------------------
 def routing_agent(state: ComplaintState) -> Dict[str, Any]:
-    """
-    Matches the categorized complaint to the college department directory
-    and attaches department contact info and SLAs.
-    """
     category = state.get("category", "")
     departments = _load_departments()
     logger.info(f"[Agent 3: Routing] Routing complaint category: {category}")
 
-    # Explicit mapping
     mapping = {
         "Wi-Fi / Network": "IT Support",
         "Classroom AV / Projector": "IT Support",
@@ -190,10 +173,6 @@ def routing_agent(state: ComplaintState) -> Dict[str, Any]:
 # Agent 4: Response Agent
 # -------------------------------------------------------------
 def response_agent(state: ComplaintState) -> Dict[str, Any]:
-    """
-    Generates a courteous, reassuring, and professional message for the student.
-    Includes reference to category, priority, and assigned department.
-    """
     student_name = state.get("student_name", "Student")
     category = state.get("category", "General")
     priority = state.get("priority", "MEDIUM")
@@ -214,10 +193,7 @@ def response_agent(state: ComplaintState) -> Dict[str, Any]:
     llm_output = llm_client.generate(prompt=prompt)
     try:
         data = json.loads(llm_output)
-        if "response" in data:
-            response_text = data["response"]
-        else:
-            response_text = llm_output
+        response_text = data.get("response", llm_output)
     except Exception:
         response_text = (
             f"Dear {student_name}, thank you for reporting the {category} issue at {location}. "
@@ -232,10 +208,6 @@ def response_agent(state: ComplaintState) -> Dict[str, Any]:
 # Agent 5: Action Decider Node (MCP / Automation Prep)
 # -------------------------------------------------------------
 def action_decision_node(state: ComplaintState) -> Dict[str, Any]:
-    """
-    Decides the tool execution plan: saving complaint to JSON via MCP,
-    preparing department notification, and setting status for n8n trigger.
-    """
     priority = state.get("priority", "MEDIUM")
     department = state.get("department", "General Administration")
 
@@ -254,17 +226,14 @@ def action_decision_node(state: ComplaintState) -> Dict[str, Any]:
 # Graph Builder Function
 # -------------------------------------------------------------
 def build_complaint_graph():
-    """Compiles the LangGraph StateGraph workflow."""
     workflow = StateGraph(ComplaintState)
 
-    # Add Nodes
     workflow.add_node("analyzer_agent", analyzer_agent)
     workflow.add_node("priority_agent", priority_agent)
     workflow.add_node("routing_agent", routing_agent)
     workflow.add_node("response_agent", response_agent)
     workflow.add_node("action_decider", action_decision_node)
 
-    # Connect Edges in Sequence
     workflow.set_entry_point("analyzer_agent")
     workflow.add_edge("analyzer_agent", "priority_agent")
     workflow.add_edge("priority_agent", "routing_agent")
@@ -275,5 +244,4 @@ def build_complaint_graph():
     return workflow.compile()
 
 
-# Global compiled workflow instance
 complaint_workflow = build_complaint_graph()

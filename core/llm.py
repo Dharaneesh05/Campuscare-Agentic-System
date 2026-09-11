@@ -50,7 +50,6 @@ class HuggingFaceLLMClient:
                     messages.append({"role": "system", "content": system_prompt})
                 messages.append({"role": "user", "content": prompt})
 
-                # Try chat completion first
                 response = self.client.chat_completion(
                     messages=messages,
                     max_tokens=max_new_tokens,
@@ -62,7 +61,6 @@ class HuggingFaceLLMClient:
             except Exception as e:
                 logger.warning(f"Hugging Face API call failed ({e}). Utilizing fallback engine.")
 
-        # Resilient fallback generation
         return self._heuristic_fallback(prompt, system_prompt)
 
     def _heuristic_fallback(self, prompt: str, system_prompt: Optional[str] = None) -> str:
@@ -72,7 +70,6 @@ class HuggingFaceLLMClient:
         """
         text = prompt.lower()
 
-        # Category & Department Detection
         if any(w in text for w in ["wi-fi", "wifi", "internet", "lan", "network", "router", "connection"]):
             category = "Wi-Fi / Network"
             department = "IT Support"
@@ -114,7 +111,6 @@ class HuggingFaceLLMClient:
             department = "General Administration"
             action = "Forward ticket to Administrative Desk."
 
-        # Priority Detection
         urgency_markers = ["exam", "test", "urgent", "emergency", "immediately", "tomorrow", "dangerous", "spark", "flood", "now"]
         high_markers = ["today", "broken", "critical", "assignment", "presentation"]
 
@@ -125,7 +121,6 @@ class HuggingFaceLLMClient:
         else:
             priority = "MEDIUM"
 
-        # Location Extraction
         location = "Campus Premises"
         loc_patterns = [
             r"(?:in|at)\s+([A-Za-z0-9\s]+(?:lab\s*\d+|room\s*\d+|block\s*[A-Za-z0-9]+|hostel\s*[A-Za-z0-9]+|hall\s*\d+|library|canteen))",
@@ -158,5 +153,4 @@ class HuggingFaceLLMClient:
         }, indent=2)
 
 
-# Global singleton instance
 llm_client = HuggingFaceLLMClient()

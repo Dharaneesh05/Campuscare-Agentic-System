@@ -19,7 +19,6 @@ def test_langgraph_pipeline():
     print("Testing CampusCare AI - LangGraph Multi-Agent Workflow")
     print("=" * 70)
 
-    # Sample input from project requirements
     initial_input = {
         "student_name": "Arun Kumar",
         "student_email": "arun@example.edu",
@@ -51,12 +50,11 @@ def test_langgraph_pipeline():
     print(f"11. Pipeline Status:  {final_state.get('status')}")
     print("-" * 70)
 
-    # Assertions
-    assert final_state.get("category") == "Wi-Fi / Network", "Category mismatch!"
-    assert final_state.get("priority") in ["HIGH", "URGENT"], "Priority should be HIGH or URGENT for exams!"
-    assert final_state.get("department") == "IT Support", "Department should be IT Support!"
-    assert "Lab 3" in final_state.get("location", ""), "Location should contain Lab 3!"
-    assert len(final_state.get("response", "")) > 10, "Response must not be empty!"
+    assert final_state.get("category") == "Wi-Fi / Network"
+    assert final_state.get("priority") in ["HIGH", "URGENT"]
+    assert final_state.get("department") == "IT Support"
+    assert "Lab 3" in final_state.get("location", "")
+    assert len(final_state.get("response", "")) > 10
 
     print("\n[All LangGraph Agent Assertions Passed Successfully!]")
     print("=" * 70)

@@ -24,7 +24,6 @@ class CampusCareMCPClient:
 
     @staticmethod
     def save_complaint(record: Dict[str, Any]) -> Dict[str, Any]:
-        """Calls the save_complaint MCP tool to persist to data/complaints.json."""
         res_str = mcp_save_complaint(
             student_name=record.get("student_name", "Anonymous"),
             student_email=record.get("student_email", "student@example.edu"),
@@ -42,13 +41,11 @@ class CampusCareMCPClient:
 
     @staticmethod
     def get_department_contact(department_name: str) -> Dict[str, Any]:
-        """Calls the get_department_contact MCP tool."""
         res_str = mcp_get_department_contact(department_name=department_name)
         return json.loads(res_str)
 
     @staticmethod
     def prepare_notification(ticket_id: str, recipient_type: str, state: Dict[str, Any]) -> Dict[str, Any]:
-        """Calls the prepare_notification MCP tool."""
         res_str = mcp_prepare_notification(
             ticket_id=ticket_id,
             recipient_type=recipient_type,
