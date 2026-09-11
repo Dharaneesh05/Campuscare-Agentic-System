@@ -14,5 +14,21 @@
     "suggested_action": "Immediately notify IT Support.",
     "response": "Your complaint has been classified as high priority and forwarded to IT Support.",
     "status": "LOGGED_AND_ROUTED"
+  },
+  {
+    "ticket_id": "CMP-20260911-0002",
+    "timestamp": "2026-09-11 11:29:18",
+    "student_name": "Arun Kumar",
+    "student_email": "arun@example.edu",
+    "class_department": "CSE",
+    "complaint": "The Wi-Fi in Lab 3 is not working and we have an online exam tomorrow.",
+    "category": "Wi-Fi / Network",
+    "priority": "HIGH",
+    "department": "IT Support",
+    "location": "Lab 3",
+    "summary": "Issue concerning wi-fi / network reported at Lab 3. Urgent attention requested due to impending examinations.",
+    "suggested_action": "Immediately notify IT Support (Prof. R. Sharma) at Central Computing Facility, Room 102.",
+    "response": "Dear Student, thank you for reporting the issue regarding 'Wi-Fi / Network' at Lab 3. Your complaint has been logged and assigned HIGH priority. It has been routed directly to the IT Support for swift resolution.",
+    "status": "LOGGED_AND_ROUTED"
   }
 ]
