@@ -60,6 +60,8 @@ class ComplaintResponse(BaseModel):
     category: str
     priority: str
     department: str
+    department_email: Optional[str] = None
+    department_head: Optional[str] = None
     location: str
     summary: str
     suggested_action: str
@@ -172,6 +174,11 @@ def process_complaint(sub: ComplaintSubmission):
         f"Automation: {n8n_res.get('message')}"
     )
 
+    dept_contact = agent_output.get("department_contact", {})
+    dept_email = dept_contact.get("email", "dharaneeshc2006@gmail.com")
+    dept_head = dept_contact.get("head", "Department Officer")
+
+    # 5. Return Structured Response
     return ComplaintResponse(
         ticket_id=ticket_id,
         student_name=agent_output.get("student_name"),
@@ -181,6 +188,8 @@ def process_complaint(sub: ComplaintSubmission):
         category=agent_output.get("category"),
         priority=agent_output.get("priority"),
         department=agent_output.get("department"),
+        department_email=dept_email,
+        department_head=dept_head,
         location=agent_output.get("location"),
         summary=agent_output.get("summary"),
         suggested_action=agent_output.get("suggested_action"),

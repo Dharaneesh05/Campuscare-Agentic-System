@@ -68,9 +68,21 @@ class HuggingFaceLLMClient:
         Deterministic, rule-based fallback that parses complaint text to ensure
         the pipeline runs reliably even without internet or when HF rate limits hit.
         """
-        text = prompt.lower()
+        # Extract only the actual complaint text so prompt instruction keywords do not cause false positives
+        match = re.search(r'Complaint:\s*["\'](.*?)["\']', prompt, re.DOTALL | re.IGNORECASE)
+        if match:
+            text = match.group(1).lower()
+        else:
+            # Strip prompt template text before analyzing
+            clean_prompt = prompt.split("Return a JSON")[0].split("e.g.")[0]
+            text = clean_prompt.lower()
 
-        if any(w in text for w in ["wi-fi", "wifi", "internet", "lan", "network", "router", "connection"]):
+        # Category & Department Detection
+        if any(w in text for w in ["water", "tap", "leak", "pipe", "toilet", "washroom", "bathroom", "restroom", "flush", "drain", "plumbing", "sewage", "supply"]):
+            category = "Water / Plumbing"
+            department = "Civil & Plumbing Maintenance"
+            action = "Dispatch emergency plumbing staff to inspect and fix the supply."
+        elif any(w in text for w in ["wi-fi", "wifi", "internet", "lan", "network", "router", "connection"]):
             category = "Wi-Fi / Network"
             department = "IT Support"
             action = "Immediately notify IT Support network administrator."
@@ -82,14 +94,10 @@ class HuggingFaceLLMClient:
             category = "Lab Computers / Software"
             department = "IT Support"
             action = "Assign lab technician to repair system."
-        elif any(w in text for w in ["electricity", "light", "fan", "power", "switch", "plug", "socket", "blackout"]):
+        elif any(w in text for w in ["electricity", "light", "fan", "power", "switch", "plug", "socket", "blackout", "wiring", "spark"]):
             category = "Electricity / Power"
             department = "Electrical Maintenance"
             action = "Alert campus electrician on duty."
-        elif any(w in text for w in ["water", "tap", "leak", "pipe", "toilet", "washroom", "bathroom", "flush"]):
-            category = "Water / Plumbing"
-            department = "Civil & Plumbing Maintenance"
-            action = "Dispatch emergency plumbing staff."
         elif any(w in text for w in ["hostel", "room", "bed", "mess", "warden", "curfew", "hot water"]):
             category = "Hostel Maintenance"
             department = "Hostel Administration"
@@ -112,7 +120,7 @@ class HuggingFaceLLMClient:
             action = "Forward ticket to Administrative Desk."
 
         urgency_markers = ["exam", "test", "urgent", "emergency", "immediately", "tomorrow", "dangerous", "spark", "flood", "now"]
-        high_markers = ["today", "broken", "critical", "assignment", "presentation"]
+        high_markers = ["today", "broken", "critical", "assignment", "presentation", "problem", "leak"]
 
         if any(marker in text for marker in urgency_markers):
             priority = "URGENT" if any(m in text for m in ["spark", "flood", "danger", "hazard"]) else "HIGH"
@@ -121,15 +129,15 @@ class HuggingFaceLLMClient:
         else:
             priority = "MEDIUM"
 
-        location = "Campus Premises"
+        location = "Campus Facility"
         loc_patterns = [
-            r"(?:in|at)\s+([A-Za-z0-9\s]+(?:lab\s*\d+|room\s*\d+|block\s*[A-Za-z0-9]+|hostel\s*[A-Za-z0-9]+|hall\s*\d+|library|canteen))",
-            r"(lab\s*\d+|room\s*\d+|block\s*[a-z0-9]+|hostel\s*[a-z0-9]+)"
+            r"(?:in|at|on|near)\s+(?:the\s+)?([A-Za-z0-9\s]+(?:lab\s*\d+|room\s*\d+|block\s*[A-Za-z0-9]+|hostel\s*[A-Za-z0-9]+|hall\s*\d+|library|canteen|bathroom|washroom|restroom))",
+            r"\b(lab\s*\d+|room\s*\d+|block\s*[a-z0-9]+|hostel\s*[a-z0-9]+|bathroom|washroom|restroom|canteen|library)\b"
         ]
         for pattern in loc_patterns:
-            match = re.search(pattern, prompt, re.IGNORECASE)
-            if match:
-                location = match.group(1).strip().title()
+            match_loc = re.search(pattern, text, re.IGNORECASE)
+            if match_loc:
+                location = match_loc.group(1).strip().title()
                 break
 
         summary = f"Issue concerning {category.lower()} reported at {location}."
