@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "ticket_id": "CMP-20260911-0001",
+    "timestamp": "2026-09-11 11:27:58",
+    "student_name": "Arun Kumar",
+    "student_email": "arun@example.edu",
+    "class_department": "CSE",
+    "complaint": "The Wi-Fi in Lab 3 is not working and we have an online exam tomorrow.",
+    "category": "Wi-Fi / Network",
+    "priority": "HIGH",
+    "department": "IT Support",
+    "location": "Lab 3",
+    "summary": "Wi-Fi is unavailable in Lab 3 before an online examination.",
+    "suggested_action": "Immediately notify IT Support.",
+    "response": "Your complaint has been classified as high priority and forwarded to IT Support.",
+    "status": "LOGGED_AND_ROUTED"
+  }
+]
