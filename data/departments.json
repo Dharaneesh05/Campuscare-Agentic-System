@@ -1,34 +1,34 @@
 {
   "IT Support": {
-    "head": "Prof. R. Sharma",
+    "head": "Prof. K. Senthil",
     "email": "dharaneeshc2006@gmail.com",
     "phone": "+91-9876543210",
     "location": "Central Computing Facility, Room 102",
     "sla_hours": 4
   },
   "Electrical Maintenance": {
-    "head": "Er. S. Verma",
-    "email": "dharaneeshc2006@gmail.com",
+    "head": "Er. M. Murugan",
+    "email": "s.dharwinsangamani@gmail.com",
     "phone": "+91-9876543211",
     "location": "Estate Office, Substation Block",
     "sla_hours": 6
   },
   "Civil & Plumbing Maintenance": {
-    "head": "Er. K. Patil",
+    "head": "Er. P. Saravanan",
     "email": "dharaneeshc2006@gmail.com",
     "phone": "+91-9876543212",
     "location": "Estate Office, Maintenance Yard",
     "sla_hours": 8
   },
   "Hostel Administration": {
-    "head": "Dr. M. Joseph (Chief Warden)",
+    "head": "Dr. R. Selvam (Chief Warden)",
     "email": "dharaneeshc2006@gmail.com",
     "phone": "+91-9876543213",
     "location": "Hostel Affairs Building, Block A",
     "sla_hours": 12
   },
   "Transport Department": {
-    "head": "Mr. A. Singh (Transport Officer)",
+    "head": "Mr. S. Thangaraj (Transport Officer)",
     "email": "dharaneeshc2006@gmail.com",
     "phone": "+91-9876543214",
     "location": "Transport Desk, Gate 2",
@@ -42,14 +42,14 @@
     "sla_hours": 24
   },
   "Canteen & Food Services": {
-    "head": "Mr. N. Gupta",
+    "head": "Mr. K. Manickam",
     "email": "dharaneeshc2006@gmail.com",
     "phone": "+91-9876543216",
     "location": "Student Activity Centre, Food Court",
     "sla_hours": 12
   },
   "General Administration": {
-    "head": "Registrar Office",
+    "head": "Dr. V. Natarajan (Registrar)",
     "email": "dharaneeshc2006@gmail.com",
     "phone": "+91-9876543217",
     "location": "Administrative Block, Room 10",

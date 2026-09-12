@@ -78,27 +78,11 @@ class HuggingFaceLLMClient:
             text = clean_prompt.lower()
 
         # Category & Department Detection
-        if any(w in text for w in ["water", "tap", "leak", "pipe", "toilet", "washroom", "bathroom", "restroom", "flush", "drain", "plumbing", "sewage", "supply"]):
-            category = "Water / Plumbing"
-            department = "Civil & Plumbing Maintenance"
-            action = "Dispatch emergency plumbing staff to inspect and fix the supply."
-        elif any(w in text for w in ["wi-fi", "wifi", "internet", "lan", "network", "router", "connection"]):
-            category = "Wi-Fi / Network"
-            department = "IT Support"
-            action = "Immediately notify IT Support network administrator."
-        elif any(w in text for w in ["projector", "screen", "mic", "speaker", "audio", "display"]):
-            category = "Classroom AV / Projector"
-            department = "IT Support"
-            action = "Dispatch AV technician to inspect the classroom."
-        elif any(w in text for w in ["computer", "pc", "monitor", "keyboard", "mouse", "desktop", "os", "software"]):
-            category = "Lab Computers / Software"
-            department = "IT Support"
-            action = "Assign lab technician to repair system."
-        elif any(w in text for w in ["electricity", "light", "fan", "power", "switch", "plug", "socket", "blackout", "wiring", "spark"]):
-            category = "Electricity / Power"
-            department = "Electrical Maintenance"
-            action = "Alert campus electrician on duty."
-        elif any(w in text for w in ["hostel", "room", "bed", "mess", "warden", "curfew", "hot water"]):
+        if any(w in text for w in ["canteen", "food", "hygiene", "meal", "snack"]):
+            category = "Canteen / Food"
+            department = "Canteen & Food Services"
+            action = "Report to Canteen Inspection Committee."
+        elif any(w in text for w in ["hostel", "warden", "curfew", "dorm", "hostel room", "mess hall", "bed"]):
             category = "Hostel Maintenance"
             department = "Hostel Administration"
             action = "Notify Hostel Warden office."
@@ -110,10 +94,26 @@ class HuggingFaceLLMClient:
             category = "Library Services"
             department = "Library Administration"
             action = "Contact Chief Librarian."
-        elif any(w in text for w in ["canteen", "food", "hygiene", "meal"]):
-            category = "Canteen / Food"
-            department = "Canteen & Food Services"
-            action = "Report to Canteen Inspection Committee."
+        elif any(w in text for w in ["projector", "screen", "mic", "speaker", "audio", "display"]):
+            category = "Classroom AV / Projector"
+            department = "IT Support"
+            action = "Dispatch AV technician to inspect the classroom."
+        elif any(w in text for w in ["wi-fi", "wifi", "internet", "lan", "network", "router", "connection"]):
+            category = "Wi-Fi / Network"
+            department = "IT Support"
+            action = "Immediately notify IT Support network administrator."
+        elif any(w in text for w in ["computer", "monitor", "keyboard", "mouse", "desktop", "software", "windows", "linux"]) or re.search(r"\b(pc|os)\b", text):
+            category = "Lab Computers / Software"
+            department = "IT Support"
+            action = "Assign lab technician to repair system."
+        elif any(w in text for w in ["electricity", "light", "fan", "power", "switch", "plug", "socket", "blackout", "wiring", "spark"]):
+            category = "Electricity / Power"
+            department = "Electrical Maintenance"
+            action = "Alert campus electrician on duty."
+        elif any(w in text for w in ["water", "tap", "leak", "pipe", "toilet", "washroom", "bathroom", "restroom", "flush", "drain", "plumbing", "sewage", "supply"]):
+            category = "Water / Plumbing"
+            department = "Civil & Plumbing Maintenance"
+            action = "Dispatch emergency plumbing staff to inspect and fix the supply."
         else:
             category = "General Campus Infrastructure"
             department = "General Administration"
