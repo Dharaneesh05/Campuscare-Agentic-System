@@ -1,16 +1,6 @@
 # CampusCare AI
 ### An Agentic AI-Based College Complaint Classification & Automated Resolution System
 
-![Python Version](https://img.shields.io/badge/Python-3.12%2B-blue.svg)
-![Framework](https://img.shields.io/badge/Backend-FastAPI-009688.svg)
-![Frontend](https://img.shields.io/badge/Frontend-Gradio-orange.svg)
-![Agentic Orchestration](https://img.shields.io/badge/Agents-LangGraph-purple.svg)
-![Tool Protocol](https://img.shields.io/badge/Tools-MCP%20Protocol-green.svg)
-![Automation](https://img.shields.io/badge/Workflow-n8n-red.svg)
-![Storage](https://img.shields.io/badge/Storage-Pure%20JSON%20(No%20SQL)-yellow.svg)
-
----
-
 ## 1. Project Overview
 
 **CampusCare AI** is an intelligent, agentic grievance management system designed for educational institutions. In traditional colleges, student complaints regarding lab computers, power cuts, plumbing leaks, bus delays, hostel issues, or canteen food are often delayed due to manual paper forms, misrouting, and slow communication.
