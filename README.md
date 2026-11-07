@@ -1,4 +1,4 @@
-# 🎓 CampusCare AI
+# CampusCare AI
 ### An Agentic AI-Based College Complaint Classification & Automated Resolution System
 
 ![Python Version](https://img.shields.io/badge/Python-3.12%2B-blue.svg)
